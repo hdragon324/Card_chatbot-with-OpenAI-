@@ -46,19 +46,19 @@ def card_info_fetch(URL):
     # 페이지가 로드될 시간을 확보 (5초 대기)
     time.sleep(5)
 
-    elements = driver.find_elements(By.CSS_SELECTOR, "article.cmd_con dt p")
-    driver.execute_script("arguments[0].scrollIntoView();", elements[0])  # 요소가 화면에 보이도록 스크롤
+    # elements = driver.find_elements(By.CSS_SELECTOR, "article.cmd_con dt p")
+    # driver.execute_script("arguments[0].scrollIntoView();", elements[0])  # 요소가 화면에 보이도록 스크롤
 
-    # 모든 요소 클릭 (스크롤 후 클릭)
-    wait = WebDriverWait(driver, 10)
-    for element in elements:
-        try:
-            driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", element)  # 화면 중앙으로 스크롤
-            clickable_element = wait.until(EC.element_to_be_clickable(element))  # 클릭 가능해질 때까지 대기
-            clickable_element.click()
-            time.sleep(1)
-        except Exception as e:
-            print(f"클릭 실패: {e}")
+    # # 모든 요소 클릭 (스크롤 후 클릭)
+    # wait = WebDriverWait(driver, 10)
+    # for element in elements:
+    #     try:
+    #         driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", element)  # 화면 중앙으로 스크롤
+    #         clickable_element = wait.until(EC.element_to_be_clickable(element))  # 클릭 가능해질 때까지 대기
+    #         clickable_element.click()
+    #         time.sleep(1)
+    #     except Exception as e:
+    #         print(f"클릭 실패: {e}")
 
     # 페이지의 HTML 소스 가져오기
     html_source = driver.page_source
@@ -104,7 +104,7 @@ def card_info_fetch(URL):
 
     bene_total = [bene.select_one('p').text for bene in soup.select('article.cmd_con dt')] # 혜택 이름(모음)
     bene_content = [bene.find("i", attrs={"data-v-b3ba76c4": True}).get_text() for bene in soup.select('article.cmd_con dt')] # 주요혜택 카테고리별 요약
-    bene_detail = [bene.text for bene in soup.select('article.cmd_con div.in_box')] # 주요혜택 카테고리별 디테일
+    # bene_detail = [bene.text for bene in soup.select('article.cmd_con div.in_box')] # 주요혜택 카테고리별 디테일
 
 
     # 딕셔너리 생성
@@ -116,6 +116,6 @@ def card_info_fetch(URL):
     result[title]['카드 이미지'] = img_name
 
     for i in range(len(bene_total)):
-        result[title]['주요 혜택'][bene_total[i]] = [bene_content[i], bene_detail[i]]
+        result[title]['주요 혜택'][bene_total[i]] = bene_content[i]
 
     return result
