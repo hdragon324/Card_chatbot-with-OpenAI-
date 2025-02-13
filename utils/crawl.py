@@ -46,20 +46,6 @@ def card_info_fetch(URL):
     # 페이지가 로드될 시간을 확보 (5초 대기)
     time.sleep(5)
 
-    # elements = driver.find_elements(By.CSS_SELECTOR, "article.cmd_con dt p")
-    # driver.execute_script("arguments[0].scrollIntoView();", elements[0])  # 요소가 화면에 보이도록 스크롤
-
-    # # 모든 요소 클릭 (스크롤 후 클릭)
-    # wait = WebDriverWait(driver, 10)
-    # for element in elements:
-    #     try:
-    #         driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", element)  # 화면 중앙으로 스크롤
-    #         clickable_element = wait.until(EC.element_to_be_clickable(element))  # 클릭 가능해질 때까지 대기
-    #         clickable_element.click()
-    #         time.sleep(1)
-    #     except Exception as e:
-    #         print(f"클릭 실패: {e}")
-
     # 페이지의 HTML 소스 가져오기
     html_source = driver.page_source
 
