@@ -40,6 +40,10 @@ if 'messages' not in st.session_state:
 
 # ------------------- ----------------- --------------
 # ------------------- 웹 표시 부분 --------------------
+st.set_page_config(
+    page_title="CARA",  # 탭 이름
+    page_icon="💳")
+
 # CSS 스타일 정의
 st.markdown(
     """
