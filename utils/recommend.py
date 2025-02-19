@@ -1,13 +1,15 @@
 import streamlit as st
-from langchain_openai import ChatOpenAI
-from langchain.prompts import PromptTemplate
-from langchain.memory import ConversationBufferMemory
-from langchain.chains import LLMChain
 import json
-from openai import OpenAI
+from langchain_openai import ChatOpenAI
 
-def recommend_my_model_test(user_content, check_card_data, credit_card_data):
+def recommend_my_model_test(user_content):
     
+    with open('data/check_card_info-ver-4.json', 'r', encoding='utf-8') as json_file:
+        check_card_data = json.load(json_file)
+
+    with open('data/credit_card_info-ver-4.json', 'r', encoding='utf-8') as json_file:
+        credit_card_data = json.load(json_file)
+
     base_template = f'''다음은 카드 추천 양식입니다.
         세부적인 설명이 없을 때는 데이터의 가장 첫번째 카드(1위)로 추천합니다.
 
@@ -86,14 +88,14 @@ def recommend_my_model_test(user_content, check_card_data, credit_card_data):
 
     # 체크카드 추천 챗봇의 페르소나
     check_content = f'''당신은 체크카드 추천 전문가입니다. 사용자의 소비 습관에 맞춰 가장 효율적인 카드를 추천합니다.
-    다음 주어지는 체크카드 파일 중에서 추천해야 합니다.
+    다음 주어지는 체크카드 파일 중에서 추천해야 합니다. 사용자가 별 특징 없이 추천을 해달라고 해도 추천을 해줍니다.
     체크카드 : {check_card_data}
     작성 양식 : {base_template}'''
 
 
     # 신용카드 추천 챗봇의 페르소나
     credit_content = f'''당신은 신용카드 추천 전문가입니다. 사용자의 습관에 맞춰 가장 효율적인 카드를 추천합니다.
-    다음 주어지는 신용카드 파일 중에서 추천해야 합니다.
+    다음 주어지는 신용카드 파일 중에서 추천해야 합니다. 사용자가 별 특징 없이 추천을 해달라고 해도 추천을 해줍니다.
     신용카드 : {credit_card_data}
     작성 양식 : {base_template}'''
 
@@ -110,6 +112,7 @@ def recommend_my_model_test(user_content, check_card_data, credit_card_data):
     ])
 
     choice = response.content  # 응답 결과 저장
+    print(choice)
 
     # 선택된 카드 유형에 따라 적절한 추천 메시지 생성
     if choice == '체크카드':
@@ -117,15 +120,28 @@ def recommend_my_model_test(user_content, check_card_data, credit_card_data):
             {'role': 'system', 'content': check_content},
             {'role': 'user', 'content': user_content}
         ])
+        card_name = final_response.content.split('\n')[0].replace('**','').split(':')[1].strip()
+        for data in check_card_data:
+            if card_name in data:
+                for k, v in data.items():
+                    card_code = v['code']
+
     elif choice == '신용카드':
         final_response = chat_model.invoke([
             {'role': 'system', 'content': credit_content},
             {'role': 'user', 'content': user_content}
         ])
+        card_name = final_response.content.split('\n')[0].replace('**','').split(':')[1].strip()
+        for data in credit_card_data:
+            if card_name in data:
+                for k, v in data.items():
+                    card_code = v['code']
+
     else:
-        final_response = "추천 결과를 분석하는 데 문제가 발생했습니다."
+        result = "추천 결과를 분석하는 데 문제가 발생했습니다."
+        return result
 
     # 최종 추천 내용 반환
     result = final_response.content
 
-    return result
+    return result, card_code
