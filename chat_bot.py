@@ -1,4 +1,5 @@
 from utils.recommend import recommend_my_model_test
+from utils.moderated import ModeratredLLMChain
 import json
 
 import streamlit as st
@@ -27,7 +28,14 @@ my_prompt = PromptTemplate(input_variables=['chat_history', 'question'],
 if 'pre_memory' not in st.session_state:
     st.session_state.pre_memory = ConversationBufferMemory(memory_key='chat_history',
                                                            return_messages=True)
-    
+
+
+# # 기존 LLMChain클래스를 상속받은 ModeratedLLMChain이므로 입력 매개 변수는 동일하게 작성
+# moderated_chain = ModeratredLLMChain(llm=chat_model,
+#                      prompt=my_prompt,
+#                      # .pre_memory로 접근하면 세션으로 관리되는 CBMemory객체가 입력됨
+#                      memory=st.session_state.pre_memory)
+
 llm_chain = LLMChain(llm=chat_model,
                      prompt=my_prompt,
                      # .pre_memory로 접근하면 세션으로 관리되는 CBMemory객체가 입력됨
